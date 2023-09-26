@@ -1,3 +1,6 @@
+
+-- Data Cleaning exercise
+
 SELECT * FROM housing;
 
 --Modifying the date column
@@ -5,34 +8,23 @@ SELECT * FROM housing;
 SELECT SaleDate, SaleDateModified 
 FROM housing;
 
-UPDATE housing
-SET SaleDate = CONVERT(Date,SaleDate);
-
 ALTER TABLE housing
 ADD SaleDateModified Date;
 
 UPDATE housing
 SET SaleDateModified = CONVERT(Date,SaleDate);
 
--- Checking for the null in property column and replacing nulls
-
-SELECT a.ParcelID, a.PropertyAddress, b.ParcelID, b.PropertyAddress
-, ISNULL(a.PropertyAddress,b.PropertyAddress)
-FROM housing a
-JOIN housing b
-ON a.ParcelID = b.ParcelID AND a.UniqueID <> b.UniqueID 
-WHERE a.PropertyAddress IS NULL;
-
-UPDATE a
-SET a.PropertyAddress =ISNULL(a.PropertyAddress,b.PropertyAddress)
-FROM housing a
-JOIN housing b
-ON a.ParcelID = b.ParcelID AND a.UniqueID <> b.UniqueID 
-WHERE a.PropertyAddress IS NULL
-
+--Checking for NULLS using a calculated field
 SELECT PropertyAddress 
 FROM housing
 WHERE PropertyAddress IS NULL
+
+Select * from 
+(select ParcelID, PropertyAddress,
+CASE WHEN  PropertyAddress IS NULL THEN 'Y' ELSE 'N' END AS AddressNULLflag
+FROM housing) A
+where A.AddressNULLflag = 'Y'
+
 
 -- Splitting the Address column(breaking adrress into city,state)
 
@@ -56,7 +48,7 @@ SELECT DISTINCT(SoldAsVacant), count(*)
 FROM housing
 GROUP BY SoldAsVacant;
     
-SELECT SoldAsVacant, CASE WHEN SoldAsVacant = 'N' THEN 'No' 
+SELECT  distinct SoldAsVacant, CASE WHEN SoldAsVacant = 'N' THEN 'No' 
 	                      WHEN SoldAsVacant ='Y' THEN 'Yes'
 						  ELSE SoldAsVacant
 						  END
@@ -91,10 +83,8 @@ SET SoldAsVacant = CASE WHEN SoldAsVacant = 'N' THEN 'No'
 			   ORDER BY UniqueID) AS rownumber
  FROM housing)
  SELECT * FROM rowCTE 
- WHERE rownumber > 1
+ WHERE rownumber = 1
 
- -- DELETE * FROM rowCTE 
- --WHERE rownumber > 1
 
  -- Deleting Column
  

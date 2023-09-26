@@ -5,7 +5,7 @@ Return all the columns from the tables.*/
 SELECT * FROM Sales.SalesOrderHeader sh
 INNER JOIN Sales.SalesOrderDetail sd
 ON sh.salesorderid = sd.salesorderid
-WHERE sh.totaldue > 100 AND sd.orderqty > 5 AND unitpricediscount < 1000
+WHERE sh.totaldue > 100 OR sd.orderqty > 5 AND unitpricediscount < 1000
 
 /* From the Production.Product table write a query in SQL that searches for the word 'red' in the name column
 . Return name, and color columns from the table.*/
@@ -14,8 +14,8 @@ SELECT Name, Color
 FROM Production.Product
 WHERE Name LIKE '%Red%'
 
-/* From the Production.Product table write a query in SQL to find all the products with a price of $80.99 
-that contain the word Mountain. Return name, and listprice columns from the table.*/
+/* From the Production.Product table write a query in SQL to find all the products with a price of $80.99.
+Return name, and listprice columns from the table.*/
 
 SELECT Name, ListPrice 
 FROM Production.Product
@@ -96,14 +96,6 @@ WHERE ListPrice BETWEEN 1000 AND 1220
 SELECT LTRIM(Name)
 FROM Production.Product
 
-/* From the production.Product table write a query in SQL to remove the substring 'HN' from the start of the 
-column productnumber. Filter the results to only show those productnumbers that start with "HN". 
-Return original productnumber column and 'TrimmedProductnumber'.*/
-
-SELECT productnumber, LTRIM(productnumber,'HN') AS "TrimmedProductnumber"
-FROM production.product
-WHERE LEFT(productnumber,2)='HN'
-
 /* From the production.Product table write a query in SQL to repeat a 0 character four times in front of a
 production line for production line 'T'.*/
 
@@ -111,7 +103,7 @@ SELECT CONCAT('0000',ProductLine) AS New
 FROM Production.Product
 WHERE ProductLine = 'T'
 
-/*69 From the Person.Person table write a SQL query to retrieve all contact first names with the characters 
+/* From the Person.Person table write a SQL query to retrieve all contact first names with the characters 
 inverted for people whose businessentityid is less than 6.*/
 
 SELECT REVERSE(FirstName)
@@ -145,18 +137,6 @@ SELECT CONCAT(FirstName, ' ', LastName, ' , ', ModifiedDate )
 AS test 
 FROM Person.Person
 
-/* From the Person.BusinessEntityAddress,Person.Address, Person.EmailAddress table write a query in SQL to 
-find the email addresses of employees and groups them by city. Return top ten rows.*/
-
-SELECT TOP 10 e.emailaddress, a.city
-FROM Person.EmailAddress e
-JOIN Person.BusinessEntityAddress b
-ON e.businessentityid=b.businessentityid
-JOIN Person.Address a
-ON b.addressid=a.addressid
-GROUP BY a.city
-ORDER BY a.city
-
 /* From the HumanResources.Employee table write a query in SQL to create a new job title called 
 "Production Assistant" in place of "Production Supervisor".*/
 
@@ -182,16 +162,6 @@ uppercase, trimmed, and concatenated with the first name.*/
 SELECT CONCAT(UPPER(RTRIM(LastName)) , ', ' , FirstName) AS Name 
 FROM person.person  
  
-/* From the HumanResources.Employee, Person.Person table write a query in SQL to show a resulting expression
-that is too small to display. Return FirstName, LastName, Title, and SickLeaveHours. The SickLeaveHours will
-be shown as a small expression in text format.*/
-
-SELECT p.FirstName, p.LastName, p.Title,
-    CAST(h.SickLeaveHours AS VARCHAR(15)) AS SickLeaveExpression
-FROM HumanResources.Employee AS h
-JOIN Person.Person AS p
-ON h.BusinessEntityID = p.BusinessEntityID
-
 /* From the production.Product table write a query in SQL to retrieve the name of the products. 
 Product, that have 33 as the first two digits of listprice.*/
 
@@ -247,15 +217,6 @@ products. Consider the calculation only on unique values.*/
 SELECT AVG(DISTINCT ListPrice) AS AverageListPrice
 FROM Production.Product
 
-/* From the Sales.SalesPerson table write a query in SQL to return a moving average of 
-yearly sales for each territory. Return BusinessEntityID, TerritoryID, SalesYear, SalesYTD,
-average SalesYTD as MovingAvg, and total SalesYTD as CumulativeTotal.*/
-
-SELECT BusinessEntityID, TerritoryID, YEAR(ModifiedDate) AS SalesYear, SalesYTD,
-       AVG(SalesYTD) OVER (PARTITION BY TerritoryID) AS MovingAvg, 
-	   SUM(SalesYTD) OVER (PARTITION BY TerritoryID) AS CummulativeTotal
-FROM Sales.SalesPerson
-
 /* From the HumanResources.Employee table write a query in SQL to return the number of 
 different titles that employees can hold.*/
 
@@ -283,14 +244,6 @@ SELECT SalesOrderID, COUNT(ProductID)
 FROM Sales.SalesOrderDetail
 GROUP BY SalesOrderID
 
-/* From the sales.salespersonquotahistory table write a query in SQL to compute the 
-statistical variance of the sales quota values for each quarter in a calendar year for a 
-sales person. Return year, salesquota and variance of salesquota.*/
-
-SELECT YEAR(QuotaDate) AS Year, SalesQuota, VAR(SalesQuota) AS Variance
-FROM sales.salespersonquotahistory
-GROUP BY YEAR(QuotaDate), DATEPART(QUARTER, QuotaDate), SalesQuota
-
 /* From the production.Product table write a query in SQL to return the total ListPrice 
 and StandardCost of products for each color. Products that name starts with 'Mountain' and 
 ListPrice is more than zero. Return Color, total list price, total standardcode. 
@@ -301,14 +254,6 @@ FROM production.Product
 WHERE Name LIKE 'Mountain%' AND ListPrice > 0 AND Color IS NOT NULL
 GROUP BY Color
 ORDER BY Color
-
-/* From the Sales.SalesPerson table write a query in SQL to find the TotalSalesYTD of 
-each SalesQuota. Show the summary of the TotalSalesYTD amounts for all SalesQuota groups. 
-Return SalesQuota and TotalSalesYTD.*/
-
-SELECT SalesQuota, SUM(SalesYTD) AS TotalSalesYTD
-FROM Sales.SalesPerson
-GROUP BY ROLLUP(SalesQuota)
 
 /* From the production.Product table write a query in SQL to calculate the sum of the
 ListPrice and StandardCost for each color. Return color, sum of ListPrice.*/

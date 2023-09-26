@@ -200,30 +200,6 @@ INNER JOIN HumanResources.EmployeePayHistory AS hr
 ON hr.BusinessEntityID = p.BusinessEntityID      
 ORDER BY FullName ASC
 
-/* From the Sales.SalesOrderDetail  table write a query in SQL to find the sum, average, count, minimum,
-and maximum order quantity for those orders whose id are 43659 and 43664. Return SalesOrderID, ProductID,
-OrderQty, sum, average, count, max, and min order quantity. */
-
-SELECT SalesOrderID, ProductID, OrderQty
-    ,SUM(OrderQty) OVER (PARTITION BY SalesOrderID) AS "Total Quantity"
-    ,AVG(OrderQty) OVER (PARTITION BY SalesOrderID) AS "Avg Quantity"
-    ,COUNT(OrderQty) OVER (PARTITION BY SalesOrderID) AS "No of Orders"
-    ,MIN(OrderQty) OVER (PARTITION BY SalesOrderID) AS "Min Quantity"
-    ,MAX(OrderQty) OVER (PARTITION BY SalesOrderID) AS "Max Quantity"
-    FROM Sales.SalesOrderDetail
-WHERE SalesOrderID IN (43659,43664)
-
-/* From the Sales.SalesOrderDetail table write a query in SQL to find the sum, average, and number of order 
-quantity for those orders whose ids are 43659 and 43664 and product id starting with '71'. Return SalesOrderID,
-OrderNumber, ProductID, OrderQty, sum, average, and number of order quantity.*/
-
-SELECT SalesOrderID, ProductID, OrderQty
-    ,SUM(OrderQty) OVER (PARTITION BY SalesOrderID) AS "Total Quantity"
-    ,AVG(OrderQty) OVER (PARTITION BY SalesOrderID) AS "Avg Quantity"
-    ,COUNT(OrderQty) OVER (PARTITION BY SalesOrderID) AS "No of Orders"
-    FROM Sales.SalesOrderDetail
-WHERE SalesOrderID IN (43659, 43664) AND ProductID LIKE '71%'
- 
 /* From the Sales.SalesOrderDetail table write a query in SQL to retrieve the total cost of each salesorderID that exceeds
 100000. Return SalesOrderID, total cost.*/
 
@@ -263,18 +239,6 @@ SELECT LastName, FirstName
 FROM Person.Person
 WHERE LastName LIKE 'R%'
 ORDER BY FirstName ASC, LastName DESC
-
-/* From the HumanResources.Employee write a query in SQL to ordered the BusinessEntityID column descendingly
-when SalariedFlag set to 'true' and BusinessEntityID in ascending order when SalariedFlag set to 'false'. 
-Return BusinessEntityID, SalariedFlag columns.*/
-
-SELECT BusinessEntityID, SalariedFlag
-FROM HumanResources.Employee
-ORDER BY 
-CASE
-  WHEN SalariedFlag = 'true' THEN BusinessEntityID END DESC,
-CASE
-  WHEN SalariedFlag = 'false' THEN BusinessEntityID END ASC
 
 /* From the Sales.vSalesPerson write a query in SQL to set the result in order by the column TerritoryName 
 when the column CountryRegionName is equal to 'United States' and by CountryRegionName for all other rows.*/
@@ -369,22 +333,6 @@ WHERE LastName LIKE 'Al%' AND FirstName LIKE 'M%' AND BusinessEntityID < 1500
 SELECT ProductID, Name, Color
 FROM Production.Product
 WHERE Name IN ('Blade', 'Crown Race','AWC Logo Cap')
-
-/* Create a SQL query to display the total number of sales orders each sales representative receives annually.
-Sort the result set by SalesPersonID and then by the date component of the orderdate in ascending order. 
-Return the year component of the OrderDate, SalesPersonID, and SalesOrderID.  Sales.SalesOrderHeader*/
-
-SELECT SalesPersonID, COUNT(SalesOrderID) AS TotalSales,YEAR(OrderDate) AS SalesYear
-FROM Sales.SalesOrderHeader
-WHERE SalesPersonID IS NOT NULL
-GROUP BY YEAR(OrderDate), SalesPersonID
-ORDER BY SalesPersonID, YEAR(OrderDate)
-
-/* From the Sales.SalesOrderHeader table write a query in SQL to find the average number
-of sales orders for all the years of the sales representatives.*/
-
-SELECT  Count (distinct salesorderID)/Count (distinct SalesPersonID) AS AverageSalesOrders
-FROM Sales.SalesOrderHeader
 
 /* Write a SQL query on the Production.ProductPhoto table to retrieve records with the characters green_ in 
 the LargePhotoFileName field. The following table's columns must all be returned.*/
